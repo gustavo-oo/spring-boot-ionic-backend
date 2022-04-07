@@ -24,7 +24,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 
 ### Installing
-After clone the repository, just open it with SpringBoot.
+After clone the repository, import it as Maven Project in SpringBoot.
 
 Run **CursomcApplication** as SpringBoot app
 
