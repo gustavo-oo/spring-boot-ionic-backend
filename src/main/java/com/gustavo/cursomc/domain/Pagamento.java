@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gustavo.cursomc.domain.enums.EstadoPagamento;
 
 @Entity
@@ -26,7 +26,7 @@ public abstract class Pagamento implements Serializable {
 	// Nesse caso queremos que o id do pagamento seja o mesmo id do pedido
 	// Ou seja, a chave estrangeira é também chave primária
 	
-	@JsonBackReference
+	@JsonIgnore
 	@OneToOne
 	@JoinColumn(name="pedido_id")
 	@MapsId
