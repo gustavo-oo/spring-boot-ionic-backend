@@ -41,6 +41,7 @@ public class CategoriaService {
 	
 	public void delete(Integer id) {
 		find(id);
+		
 		try {
 			repo.deleteById(id);
 		}
