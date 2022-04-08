@@ -7,7 +7,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.gustavo.cursomc.domain.Cliente;
+import com.gustavo.cursomc.services.validation.ClienteUpdate;
 
+@ClienteUpdate
 public class ClienteDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -24,8 +26,6 @@ public class ClienteDTO implements Serializable {
 	public ClienteDTO(){
 	}
 	
-	//public Cliente
-
 	public ClienteDTO(Cliente obj) {
 		super();
 		id = obj.getId();
