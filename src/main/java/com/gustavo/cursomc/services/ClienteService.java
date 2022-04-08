@@ -1,7 +1,11 @@
 package com.gustavo.cursomc.services;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,9 +14,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.gustavo.cursomc.domain.Cidade;
 import com.gustavo.cursomc.domain.Cliente;
+import com.gustavo.cursomc.domain.Endereco;
+import com.gustavo.cursomc.domain.enums.TipoCliente;
 import com.gustavo.cursomc.dto.ClienteDTO;
+import com.gustavo.cursomc.dto.ClienteNewDTO;
 import com.gustavo.cursomc.repositories.ClienteRepository;
+import com.gustavo.cursomc.repositories.EnderecoRepository;
 import com.gustavo.cursomc.services.exceptions.DataIntegrityException;
 import com.gustavo.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -20,27 +29,41 @@ import com.gustavo.cursomc.services.exceptions.ObjectNotFoundException;
 public class ClienteService {
 	
 	@Autowired
-	ClienteRepository repo;
+	ClienteRepository clienteRepository;
+	
+	@Autowired
+	EnderecoRepository enderecoRepository;
 	
 	public Cliente find(Integer id) {
-		Optional<Cliente> obj = repo.findById(id);
+		Optional<Cliente> obj = clienteRepository.findById(id);
 		
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
+	}
+	
+	@Transactional
+	public Cliente insert(Cliente obj) {
+		
+		obj.setId(null);
+		Cliente savedClient = clienteRepository.save(obj);
+		
+		enderecoRepository.saveAll(savedClient.getEnderecos());
+		
+		return savedClient;
 	}
 	
 	public Cliente update(Cliente obj) {
 		Cliente newObj = find(obj.getId());
 		
 		updateData(newObj, obj);
-		return repo.save(newObj);
+		return clienteRepository.save(newObj);
 	}
 	
 	public void delete(Integer id) {
 		find(id);
 		
 		try {
-			repo.deleteById(id);
+			clienteRepository.deleteById(id);
 		}
 		catch(DataIntegrityViolationException exception){
 			throw new DataIntegrityException("Não é possível excluir um cliente porque há entidades relacionadas");
@@ -49,18 +72,53 @@ public class ClienteService {
 	}
 	
 	public List<Cliente> findAll(){
-		return repo.findAll();
+		return clienteRepository.findAll();
 	}
 	
 	//Renderiza os dados do banco por páginas
 	public Page<Cliente> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-		return repo.findAll(pageRequest);
+		return clienteRepository.findAll(pageRequest);
 	}
 	
 	public Cliente fromDTO(ClienteDTO objDTO) {
 		//throw new UnsupportedOperationException();
 		return new Cliente(objDTO.getId(), objDTO.getNome(), objDTO.getEmail(), null, null);
+	}
+	
+	public Cliente fromDTO(ClienteNewDTO objDTO) {
+		//throw new UnsupportedOperationException();
+		Cliente cliente = new Cliente(
+				null, 
+				objDTO.getNome(), 
+				objDTO.getEmail(), 
+				objDTO.getCpfOuCnpj(), 
+				TipoCliente.toEnum(objDTO.getTipo()));
+		
+		Cidade cidade = new Cidade(objDTO.getCidadeId(), null, null);
+		
+		Endereco endereco = new Endereco(
+				null, 
+				objDTO.getLogradouro(), 
+				objDTO.getNumero(), 
+				objDTO.getComplemento(), 
+				objDTO.getBairro(), 
+				objDTO.getCep(), 
+				cliente, 
+				cidade);
+		
+		cliente.setEnderecos(Arrays.asList(endereco));
+		
+		cliente.setTelefones(new HashSet<String>(Arrays.asList(objDTO.getTelefone1())));
+		
+		if(objDTO.getTelefone2() != null) {
+			cliente.getTelefones().addAll(Arrays.asList(objDTO.getTelefone2()));
+		}
+		if(objDTO.getTelefone3() != null) {
+			cliente.getTelefones().addAll(Arrays.asList(objDTO.getTelefone3()));
+		}
+		
+		return cliente;
 	}
 	
 	private void updateData(Cliente newObj, Cliente obj) {

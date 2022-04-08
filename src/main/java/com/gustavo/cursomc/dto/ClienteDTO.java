@@ -23,6 +23,8 @@ public class ClienteDTO implements Serializable {
 	
 	public ClienteDTO(){
 	}
+	
+	//public Cliente
 
 	public ClienteDTO(Cliente obj) {
 		super();
@@ -54,7 +56,4 @@ public class ClienteDTO implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	
-	
 }
