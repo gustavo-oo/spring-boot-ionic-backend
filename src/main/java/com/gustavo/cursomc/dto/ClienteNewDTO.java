@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ClienteNewDTO implements Serializable{
@@ -20,18 +21,31 @@ public class ClienteNewDTO implements Serializable{
 	@Email(message = "Email inválido")
 	private String email;
 	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String cpfOuCnpj;
+	
+	@NotNull(message = "Preenchimento obrigatório")
 	private Integer tipo;
 	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String logradouro;
+	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String numero;
+	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String complemento;
+	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String bairro;
+	
+	@NotEmpty(message = "Preenchimento obrigatório")
 	private String cep;
 	
 	@NotEmpty(message = "Preenchimento obrigatório")
 	private List<String> telefones = new ArrayList<>();
 	
+	@NotNull(message = "Preenchimento obrigatório")
 	private Integer cidadeId;
 	
 	
