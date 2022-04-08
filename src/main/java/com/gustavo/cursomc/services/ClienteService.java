@@ -109,14 +109,7 @@ public class ClienteService {
 		
 		cliente.setEnderecos(Arrays.asList(endereco));
 		
-		cliente.setTelefones(new HashSet<String>(Arrays.asList(objDTO.getTelefone1())));
-		
-		if(objDTO.getTelefone2() != null) {
-			cliente.getTelefones().addAll(Arrays.asList(objDTO.getTelefone2()));
-		}
-		if(objDTO.getTelefone3() != null) {
-			cliente.getTelefones().addAll(Arrays.asList(objDTO.getTelefone3()));
-		}
+		cliente.setTelefones(new HashSet<String>(objDTO.getTelefones()));
 		
 		return cliente;
 	}
