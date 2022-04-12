@@ -1,6 +1,7 @@
 package com.gustavo.cursomc.domain;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,28 +25,28 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Pedido implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instante;
-	
+
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
 	private Pagamento pagamento;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "endereco_de_entrega_id")
 	private Endereco enderecoDeEntrega;
-	
+
 	@OneToMany(mappedBy = "id.pedido")
 	private Set<ItemPedido> itens = new HashSet<>();
-	
+
 	public Pedido() {
 	}
 
@@ -56,27 +57,27 @@ public class Pedido implements Serializable {
 		this.cliente = cliente;
 		this.enderecoDeEntrega = enderecoDeEntrega;
 	}
-	
+
 	public double getValorTotal() {
 		double soma = 0;
-		
-		for(ItemPedido item: itens) {
+
+		for (ItemPedido item : itens) {
 			soma += item.getSubTotal();
 		}
-		
+
 		return soma;
 	}
 
 	@JsonIgnore
-	public List<Produto> getProdutos(){
+	public List<Produto> getProdutos() {
 		List<Produto> lista = new ArrayList<>();
-		
-		for(ItemPedido x: itens) {
+
+		for (ItemPedido x : itens) {
 			lista.add(x.getProduto());
 		}
 		return lista;
 	}
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -116,7 +117,7 @@ public class Pedido implements Serializable {
 	public void setEnderecoDeEntrega(Endereco enderecoDeEntrega) {
 		this.enderecoDeEntrega = enderecoDeEntrega;
 	}
-	
+
 	public Set<ItemPedido> getItens() {
 		return itens;
 	}
@@ -140,5 +141,22 @@ public class Pedido implements Serializable {
 			return false;
 		Pedido other = (Pedido) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+		String result = "Pedido número: " + getId() + ", Instante: " + dateFormat.format(getInstante()) + ", Cliente: "
+				+ getCliente().getNome() + ", Situação do pagamento: " + getPagamento().getEstado().getDescricao()
+				+ "\nDetalhes:\n";
+
+		for (ItemPedido item : getItens()) {
+			result += item.toString();
+		}
+
+		result += "Valor total: " + getValorTotal();
+
+		return result;
 	}
 }
