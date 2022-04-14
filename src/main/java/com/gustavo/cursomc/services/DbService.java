@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gustavo.cursomc.domain.Categoria;
@@ -34,6 +35,9 @@ import com.gustavo.cursomc.repositories.ProdutoRepository;
 @Service
 public class DbService {
 
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
+	
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 
@@ -118,7 +122,8 @@ public class DbService {
 		estadoRepository.saveAll(Arrays.asList(est1, est2));
 		cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
 
-		Cliente cli1 = new Cliente(null, "Maria Silva", "gustavopchaves@hotmail.com", "36378912377", TipoCliente.PESSOAFISICA);
+		Cliente cli1 = new Cliente(null, "Maria Silva", "gustavopchaves@hotmail.com", "36378912377", 
+			TipoCliente.PESSOAFISICA, passwordEncoder.encode("senha"));
 
 		cli1.setTelefones(new HashSet<String>(Arrays.asList("27363323", "93838393")));
 
